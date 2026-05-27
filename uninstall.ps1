@@ -3,7 +3,7 @@
 
 $ErrorActionPreference = "Continue"
 
-Write-Host "=== Kripto Kaldirma Sihirbazi ===" -ForegroundColor Yellow
+Write-Host "=== Kripto Kaldirma Sihirbazi - Eren Gunduzvar ===" -ForegroundColor Yellow
 
 # 1. Kayit Defteri (Registry) Temizligi
 Write-Host "Kayit defteri entegrasyonlari kaldiriliyor..." -ForegroundColor Cyan

@@ -3,7 +3,7 @@
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "=== Kripto Kurulum Sihirbazi ===" -ForegroundColor Cyan
+Write-Host "=== Kripto Kurulum Sihirbazi - Eren Gunduzvar ===" -ForegroundColor Cyan
 
 # 1. Python Kontrolu ve Kurulumu
 $pythonInstalled = $false
