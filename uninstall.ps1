@@ -1,7 +1,21 @@
 # Kripto Uygulamasi Kaldirma Betigi
 # Bu betik kayit defteri entegrasyonlarini temizler ve uygulama klasorunu kaldirir. Python'a dokunmaz.
 
-$ErrorActionPreference = "Continue"
+$currentScript = $MyInvocation.MyCommand.Definition
+$installDir = "$env:LocalAppData\Kripto"
+
+# Kilitlenmeyi onlemek icin betik eger hedef klasorun icindeyse kendini TEMP'e kopyalayip oradan calistirir
+if ($currentScript -like "$installDir\*") {
+    $tempScript = "$env:TEMP\uninstall.ps1"
+    Copy-Item -Path $currentScript -Destination $tempScript -Force
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tempScript`""
+    Exit
+}
+
+# Kilidin tamamen kalkmasi icin kisa bir sure bekleyelim
+if ($currentScript -like "$env:TEMP\*") {
+    Start-Sleep -Seconds 1
+}
 
 Write-Host "=== Kripto Kaldirma Sihirbazi - Eren Gunduzvar ===" -ForegroundColor Yellow
 
@@ -10,6 +24,7 @@ Write-Host "Kayit defteri entegrasyonlari kaldiriliyor..." -ForegroundColor Cyan
 
 try {
     # Kayit defteri temizligi (.NET API ile guvenli ve hizli)
+    [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\*\shell\KriptoMenu", $false)
     [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\*\shell\KriptoSifrele", $false)
     [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\*\shell\KriptoSifreCoz", $false)
     [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.enc\UserChoice", $false)
