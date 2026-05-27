@@ -1,9 +1,9 @@
 Windows Registry Editor Version 5.00
 
-; Eski genel 'Sifre Coz' seçeneğini temizliyoruz
+; Eski genel 'Sifre Coz' secenegini temizliyoruz
 [-HKEY_CURRENT_USER\Software\Classes\*\shell\KriptoSifreCoz]
 
-; Tüm dosyalarda 'Sifrele' seçeneği görünecek (ancak .enc uzantılı dosyalarda görünmeyecek)
+; Tum dosyalarda 'Sifrele' secenegi gorunecek (ancak .enc uzantili dosyalarda gorunmeyecek)
 [HKEY_CURRENT_USER\Software\Classes\*\shell\KriptoSifrele]
 @="Kripto - Sifrele"
 "Icon"="shell32.dll,47"
@@ -13,18 +13,18 @@ Windows Registry Editor Version 5.00
 @="pythonw.exe \"c:\\Users\\eymen\\Repo\\Encrpyt\\kripto.py\" -l \"%1\""
 
 
-; .enc uzantısı için önceki kullanıcı seçimlerini temizleyerek kendi tanımımızı zorunlu kılıyoruz
+; .enc uzantisi icin onceki kullanici secimlerini temizleyerek kendi tanimimizi zorunlu kiliyoruz
 [-HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.enc\UserChoice]
 
-; .enc uzantısını sisteme tanımlıyoruz
+; .enc uzantisini sisteme tanimliyoruz
 [HKEY_CURRENT_USER\Software\Classes\.enc]
 @="EncryptedFile"
 
-; Varsayılan Simge (Default Icon) - Kullanıcı tarafından sağlanan kripto.ico dosyasını kullanır
+; Varsayilan Simge (Default Icon) - Kullanici tarafindan saglanan kripto.ico dosyasini kullanir
 [HKEY_CURRENT_USER\Software\Classes\EncryptedFile\DefaultIcon]
 @="c:\\Users\\eymen\\Repo\\Encrpyt\\kripto.ico"
 
-; Sadece .enc uzantılı dosyalarda 'Sifre Coz' seçeneği görünecek
+; Sadece .enc uzantili dosyalarda 'Sifre Coz' secenegi gorunecek
 [HKEY_CURRENT_USER\Software\Classes\EncryptedFile\shell\KriptoSifreCoz]
 @="Kripto - Sifre Coz"
 "Icon"="shell32.dll,47"
@@ -33,7 +33,7 @@ Windows Registry Editor Version 5.00
 [HKEY_CURRENT_USER\Software\Classes\EncryptedFile\shell\KriptoSifreCoz\command]
 @="pythonw.exe \"c:\\Users\\eymen\\Repo\\Encrpyt\\kripto.py\" -u \"%1\""
 
-; Çift tıklandığında (open eyleminde) şifre çözme ve düzenleme modunu başlat (Türkçe karakter sorunu için İngilizce karakterler kullanıldı)
+; Cift tiklandiginda (open eyleminde) sifre cozme ve duzenleme modunu baslat (Turkce karakter sorunu icin Ingilizce karakterler kullanildi)
 [HKEY_CURRENT_USER\Software\Classes\EncryptedFile\shell\open]
 @="Kripto - Ac ve Duzenle"
 "Icon"="shell32.dll,47"

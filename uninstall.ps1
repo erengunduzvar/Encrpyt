@@ -1,56 +1,43 @@
-# Kripto Uygulaması Kaldırma Betiği
-# Bu betik kayıt defteri entegrasyonlarını temizler ve uygulama klasörünü kaldırır. Python'a dokunmaz.
+# Kripto Uygulamasi Kaldirma Betigi
+# Bu betik kayit defteri entegrasyonlarini temizler ve uygulama klasorunu kaldirir. Python'a dokunmaz.
 
 $ErrorActionPreference = "Continue"
 
-Write-Host "=== Kripto Kaldırma Sihirbazı ===" -ForegroundColor Yellow
+Write-Host "=== Kripto Kaldirma Sihirbazi ===" -ForegroundColor Yellow
 
-# 1. Kayıt Defteri (Registry) Temizliği
-Write-Host "Kayıt defteri entegrasyonları kaldırılıyor..." -ForegroundColor Cyan
+# 1. Kayit Defteri (Registry) Temizligi
+Write-Host "Kayit defteri entegrasyonlari kaldiriliyor..." -ForegroundColor Cyan
 
 try {
-    # Şifrele menüsünü kaldır
-    if (Test-Path "HKCU:\Software\Classes\*\shell\KriptoSifrele") {
-        Remove-Item -Path "HKCU:\Software\Classes\*\shell\KriptoSifrele" -Recurse -Force
-    }
-    
-    # Eski Şifre Çöz menüsü kalıntısı varsa kaldır
-    if (Test-Path "HKCU:\Software\Classes\*\shell\KriptoSifreCoz") {
-        Remove-Item -Path "HKCU:\Software\Classes\*\shell\KriptoSifreCoz" -Recurse -Force
-    }
+    # Kayit defteri temizligi (.NET API ile guvenli ve hizli)
+    [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\*\shell\KriptoSifrele", $false)
+    [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\*\shell\KriptoSifreCoz", $false)
+    [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.enc\UserChoice", $false)
+    [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\.enc", $false)
+    [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\EncryptedFile", $false)
 
-    # .enc Uzantı ilişkilendirmelerini kaldır
-    if (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.enc\UserChoice") {
-        Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.enc\UserChoice" -Force
-    }
-    
-    if (Test-Path "HKCU:\Software\Classes\.enc") {
-        Remove-Item -Path "HKCU:\Software\Classes\.enc" -Recurse -Force
-    }
-    
-    if (Test-Path "HKCU:\Software\Classes\EncryptedFile") {
-        Remove-Item -Path "HKCU:\Software\Classes\EncryptedFile" -Recurse -Force
-    }
-
-    Write-Host "Kayıt defteri temizliği tamamlandı." -ForegroundColor Green
-} catch {
-    Write-Warning "Kayıt defteri temizlenirken bazı hatalar oluştu: $_"
+    Write-Host "Kayit defteri temizligi tamamlandi." -ForegroundColor Green
+}
+catch {
+    Write-Warning "Kayit defteri temizlenirken bazi hatalar olustu: $_"
 }
 
-# 2. Dosyaların Silinmesi
+# 2. Dosyalarin Silinmesi
 $installDir = "$env:LocalAppData\Kripto"
 if (Test-Path $installDir) {
-    Write-Host "Uygulama dosyaları siliniyor: $installDir" -ForegroundColor Cyan
+    Write-Host "Uygulama dosyalari siliniyor: $installDir" -ForegroundColor Cyan
     try {
         Remove-Item -Path $installDir -Recurse -Force
-        Write-Host "Uygulama klasörü başarıyla silindi." -ForegroundColor Green
-    } catch {
-        Write-Warning "Uygulama klasörü silinirken hata oluştu: $_"
+        Write-Host "Uygulama klasoru basariyla silindi." -ForegroundColor Green
     }
-} else {
-    Write-Host "Uygulama klasörü zaten bulunamadı." -ForegroundColor Green
+    catch {
+        Write-Warning "Uygulama klasoru silinirken hata olustu: $_"
+    }
+}
+else {
+    Write-Host "Uygulama klasoru zaten bulunamadi." -ForegroundColor Green
 }
 
-Write-Host "`nKaldırma işlemi başarıyla tamamlandı!" -ForegroundColor Green
-Write-Host "Çıkmak için bir tuşa basın..."
+Write-Host "`nKaldirma islemi basariyla tamamlandi!" -ForegroundColor Green
+Write-Host "Cikmak icin bir tusa basin..."
 [void][System.Console]::ReadKey()

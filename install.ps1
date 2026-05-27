@@ -1,11 +1,11 @@
-# Kripto Uygulaması Yükleme Betiği
-# Bu betik Python'ın kurulu olup olmadığını kontrol eder, yoksa kurar, bağımlılıkları yükler ve kayıt defteri entegrasyonlarını yapar.
+# Kripto Uygulamasi Yukleme Betigi
+# Bu betik Python'in kurulu olup olmadigini kontrol eder, yoksa kurar, bagliliklari yukler ve kayit defteri entegrasyonlarini yapar.
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "=== Kripto Kurulum Sihirbazı ===" -ForegroundColor Cyan
+Write-Host "=== Kripto Kurulum Sihirbazi ===" -ForegroundColor Cyan
 
-# 1. Python Kontrolü ve Kurulumu
+# 1. Python Kontrolu ve Kurulumu
 $pythonInstalled = $false
 try {
     $version = & python --version 2>&1
@@ -13,28 +13,30 @@ try {
         $pythonInstalled = $true
         Write-Host "Python zaten kurulu: $version" -ForegroundColor Green
     }
-} catch {
-    # Python kurulu değil veya PATH üzerinde değil
+}
+catch {
+    # Python kurulu degil veya PATH uzerinde degil
 }
 
 if (-not $pythonInstalled) {
-    Write-Host "Python bulunamadı. Python 3.12.3 indiriliyor..." -ForegroundColor Yellow
+    Write-Host "Python bulunamadi. Python 3.12.3 indiriliyor..." -ForegroundColor Yellow
     $url = "https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe"
     $installerPath = "$env:TEMP\python-installer.exe"
     
-    # İlerleme çubuğunu gizle (indirmeyi hızlandırır)
+    # Ilerleme cubugunu gizle (indirmeyi hizlandirir)
     $progressPreference = 'SilentlyContinue'
     Invoke-WebRequest -Uri $url -OutFile $installerPath
     $progressPreference = 'Continue'
     
-    Write-Host "Python kuruluyor (Sessiz Kurulum)... Bu işlem bir dakika kadar sürebilir." -ForegroundColor Yellow
+    Write-Host "Python kuruluyor (Sessiz Kurulum)... Bu islem bir dakika kadar surebilir." -ForegroundColor Yellow
     # Sessiz kurulum parametreleri: quiet (sessiz), PrependPath (PATH'e ekle)
     $process = Start-Process -FilePath $installerPath -ArgumentList "/quiet PrependPath=1 Include_test=0 InstallAllUsers=0" -Wait -PassThru
     
     if ($process.ExitCode -eq 0) {
-        Write-Host "Python başarıyla kuruldu." -ForegroundColor Green
-    } else {
-        Write-Warning "Python kurulumu hata koduyla bitti: $($process.ExitCode). Lütfen manuel kurmayı deneyin."
+        Write-Host "Python basariyla kuruldu." -ForegroundColor Green
+    }
+    else {
+        Write-Warning "Python kurulumu hata koduyla bitti: $($process.ExitCode). Lutfen manuel kurmayi deneyin."
     }
     
     # Ortam değişkenlerini güncel session için yenileyelim
@@ -48,14 +50,15 @@ try {
     & python -m pip install --upgrade pip --quiet
     # cryptography paketi
     & python -m pip install cryptography --quiet
-    Write-Host "Kütüphaneler hazır." -ForegroundColor Green
-} catch {
-    Write-Warning "Python paketleri yüklenirken hata oluştu: $_"
+    Write-Host "Kutuphaneler hazir." -ForegroundColor Green
+}
+catch {
+    Write-Warning "Python paketleri yuklenirken hata olustu: $_"
 }
 
 # 3. Dosyaların Kopyalanması
 $installDir = "$env:LocalAppData\Kripto"
-Write-Host "Dosyalar hedefe kopyalanıyor: $installDir" -ForegroundColor Cyan
+Write-Host "Dosyalar hedefe kopyalaniyor: $installDir" -ForegroundColor Cyan
 
 if (-not (Test-Path $installDir)) {
     New-Item -Path $installDir -ItemType Directory | Out-Null
@@ -65,49 +68,53 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Copy-Item -Path "$scriptDir\kripto.py" -Destination $installDir -Force
 Copy-Item -Path "$scriptDir\kripto.ico" -Destination $installDir -Force
 
-Write-Host "Dosya kopyalama tamamlandı." -ForegroundColor Green
+Write-Host "Dosya kopyalama tamamlandi." -ForegroundColor Green
 
-# 4. Kayıt Defteri (Registry) Entegrasyonu
-Write-Host "Kayıt defteri entegrasyonu yapılıyor..." -ForegroundColor Cyan
+# 4. Kayit Defteri (Registry) Entegrasyonu
+Write-Host "Kayit defteri entegrasyonu yapiliyor..." -ForegroundColor Cyan
 
-# Yardımcı fonksiyonlar
+# Yardımcı fonksiyonlar (.NET Registry API kullanarak donmaları ve wildcard sorunlarını önler)
 function Set-RegKeyDefault {
     param ($Path, $Value)
-    if (-not (Test-Path $Path)) {
-        New-Item -Path $Path -Force | Out-Null
+    $subKeyPath = $Path.Replace("HKCU:\", "")
+    $regKey = [Microsoft.Win32.Registry]::CurrentUser.CreateSubKey($subKeyPath)
+    if ($regKey -ne $null) {
+        $regKey.SetValue("", $Value)
+        $regKey.Close()
     }
-    Set-Item -Path $Path -Value $Value | Out-Null
 }
 
 function Set-RegValue {
     param ($Path, $Name, $Value)
-    if (-not (Test-Path $Path)) {
-        New-Item -Path $Path -Force | Out-Null
+    $subKeyPath = $Path.Replace("HKCU:\", "")
+    $regKey = [Microsoft.Win32.Registry]::CurrentUser.CreateSubKey($subKeyPath)
+    if ($regKey -ne $null) {
+        $regKey.SetValue($Name, $Value)
+        $regKey.Close()
     }
-    Set-ItemProperty -Path $Path -Name $Name -Value $Value -Force | Out-Null
 }
 
 try {
-    # Eski genel 'Sifre Coz' seçeneğini temizliyoruz
-    Remove-Item -Path "HKCU:\Software\Classes\*\shell\KriptoSifreCoz" -Recurse -ErrorAction SilentlyContinue
+    # Eski genel 'Sifre Coz' secenegini temizliyoruz
+    [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\*\shell\KriptoSifreCoz", $false)
 
     # Pythonw.exe ve dosya yolları
     $pythonwPath = "pythonw.exe"
     $pyFile = "$installDir\kripto.py"
     $icoFile = "$installDir\kripto.ico"
 
-    # --- Şifrele Menüsü ---
+    # --- Sifrele Menusu ---
     $sifreleKey = "HKCU:\Software\Classes\*\shell\KriptoSifrele"
-    Set-RegKeyDefault -Path $sifreleKey -Value "Kripto - Şifrele"
+    Set-RegKeyDefault -Path $sifreleKey -Value "Kripto - Sifrele"
     Set-RegValue -Path $sifreleKey -Name "Icon" -Value "shell32.dll,47"
     Set-RegValue -Path $sifreleKey -Name "AppliesTo" -Value "NOT System.FileExtension:=.enc"
 
     $sifreleCmdKey = "$sifreleKey\command"
     Set-RegKeyDefault -Path $sifreleCmdKey -Value "$pythonwPath `"$pyFile`" -l `"%1`""
 
-    # --- .enc Uzantısı İlişkilendirmesi ---
-    # Önceki kullanıcı tercihlerini temizleyelim ki bizim tanımımız öncelikli olsun
-    Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.enc\UserChoice" -Force -ErrorAction SilentlyContinue
+    # --- .enc Uzantisi Iliskilendirmesi ---
+    # Onceki kullanici tercihlerini temizleyelim ki bizim tanimimiz oncelikli olsun
+    [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.enc\UserChoice", $false)
 
     $encKey = "HKCU:\Software\Classes\.enc"
     Set-RegKeyDefault -Path $encKey -Value "EncryptedFile"
@@ -116,28 +123,29 @@ try {
     $iconKey = "HKCU:\Software\Classes\EncryptedFile\DefaultIcon"
     Set-RegKeyDefault -Path $iconKey -Value $icoFile
 
-    # --- Şifre Çöz Menüsü ---
+    # --- Sifre Coz Menusu ---
     $cozKey = "HKCU:\Software\Classes\EncryptedFile\shell\KriptoSifreCoz"
-    Set-RegKeyDefault -Path $cozKey -Value "Kripto - Şifre Çöz"
+    Set-RegKeyDefault -Path $cozKey -Value "Kripto - Sifre Coz"
     Set-RegValue -Path $cozKey -Name "Icon" -Value "shell32.dll,47"
     Set-RegValue -Path $cozKey -Name "NeverDefault" -Value ""
 
     $cozCmdKey = "$cozKey\command"
     Set-RegKeyDefault -Path $cozCmdKey -Value "$pythonwPath `"$pyFile`" -u `"%1`""
 
-    # --- Çift Tıklama (Aç ve Düzenle) Eylemi ---
+    # --- Cift Tiklama (Ac ve Duzenle) Eylemi ---
     $openKey = "HKCU:\Software\Classes\EncryptedFile\shell\open"
-    Set-RegKeyDefault -Path $openKey -Value "Kripto - Aç ve Düzenle"
+    Set-RegKeyDefault -Path $openKey -Value "Kripto - Ac ve Duzenle"
     Set-RegValue -Path $openKey -Name "Icon" -Value "shell32.dll,47"
 
     $openCmdKey = "$openKey\command"
     Set-RegKeyDefault -Path $openCmdKey -Value "$pythonwPath `"$pyFile`" -o `"%1`""
 
-    Write-Host "Kayıt defteri entegrasyonu başarıyla tamamlandı!" -ForegroundColor Green
-} catch {
-    Write-Warning "Kayıt defteri güncellenirken bir hata oluştu: $_"
+    Write-Host "Kayit defteri entegrasyonu basariyla tamamlandi!" -ForegroundColor Green
+}
+catch {
+    Write-Warning "Kayit defteri guncellenirken bir hata olustu: $_"
 }
 
-Write-Host "`nKurulum başarıyla tamamlandı! Artık dosyalarınıza sağ tıklayarak şifreleme/şifre çözme işlemlerini yapabilirsiniz." -ForegroundColor Green
-Write-Host "Çıkmak için bir tuşa basın..."
+Write-Host "`nKurulum basariyla tamamlandi! Artik dosyalariniza sag tiklayarak sifreleme/sifre cozme islemlerini yapabilirsiniz." -ForegroundColor Green
+Write-Host "Cikmak icin bir tusa basin..."
 [void][System.Console]::ReadKey()

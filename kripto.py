@@ -215,10 +215,11 @@ if __name__ == "__main__":
         root.withdraw()
         
         islem_adi = "Şifreleme" if islem == "-l" else ("Aç ve Düzenle" if islem == "-o" else "Şifre Çözme")
+        show_char = None if islem == "-l" else "*"
         parola = simpledialog.askstring(
             f"Kripto - {islem_adi}", 
-            f"Lütfen '{os.path.basename(dosya)}' için parolanızı girin:", 
-            show="*"
+            f"Lütfen '{os.path.basename(dosya)}' için parolanızı girin:",
+            show=show_char
         )
         if not parola:
             sys.exit(0)
