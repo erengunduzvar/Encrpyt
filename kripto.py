@@ -15,7 +15,7 @@ def anahtar_uret(parola: str, tuz: bytes) -> bytes:
 
 def dosya_sifrele(dosya_yolu: str, parola: str) -> tuple[bool, str]:
     if not os.path.exists(dosya_yolu):
-        msg = f"Hata: '{dosya_yolu}' dosyası bulunamadı!"
+        msg = f"Hata: '{dosya_yolu}' dosyasi bulunamadi!"
         print(f"❌ {msg}")
         return False, msg
 
@@ -40,13 +40,13 @@ def dosya_sifrele(dosya_yolu: str, parola: str) -> tuple[bool, str]:
         print(f"🔒 {msg}")
         return True, msg
     except Exception as e:
-        msg = f"Şifreleme sırasında bir hata oluştu: {str(e)}"
+        msg = f"Şifreleme sirasinda bir hata oluştu: {str(e)}"
         print(f"❌ {msg}")
         return False, msg
 
 def dosya_sifre_coz(sifreli_dosya_yolu: str, parola: str) -> tuple[bool, str]:
     if not os.path.exists(sifreli_dosya_yolu):
-        msg = f"Hata: '{sifreli_dosya_yolu}' dosyası bulunamadı!"
+        msg = f"Hata: '{sifreli_dosya_yolu}' dosyasi bulunamadi!"
         print(f"❌ {msg}")
         return False, msg
 
@@ -71,13 +71,13 @@ def dosya_sifre_coz(sifreli_dosya_yolu: str, parola: str) -> tuple[bool, str]:
         return True, msg
         
     except Exception:
-        msg = "Hata: Yanlış parola veya bozuk dosya!"
+        msg = "Hata: Yanliş parola veya bozuk dosya!"
         print(f"❌ {msg}")
         return False, msg
 
 def dosya_ac_ve_duzenle(sifreli_dosya_yolu: str, parola: str) -> tuple[bool, str]:
     if not os.path.exists(sifreli_dosya_yolu):
-        msg = f"Hata: '{sifreli_dosya_yolu}' dosyası bulunamadı!"
+        msg = f"Hata: '{sifreli_dosya_yolu}' dosyasi bulunamadi!"
         print(f"❌ {msg}")
         return False, msg
 
@@ -97,7 +97,7 @@ def dosya_ac_ve_duzenle(sifreli_dosya_yolu: str, parola: str) -> tuple[bool, str
             f.write(cozulmus_veri)
             
     except Exception:
-        msg = "Hata: Yanlış parola veya bozuk dosya!"
+        msg = "Hata: Yanliş parola veya bozuk dosya!"
         print(f"❌ {msg}")
         return False, msg
 
@@ -106,7 +106,7 @@ def dosya_ac_ve_duzenle(sifreli_dosya_yolu: str, parola: str) -> tuple[bool, str
     except Exception as e:
         if os.path.exists(orijinal_dosya_yolu):
             os.remove(orijinal_dosya_yolu)
-        return False, f"Dosya açılamadı: {str(e)}"
+        return False, f"Dosya açilamadi: {str(e)}"
 
     import tkinter as tk
     from tkinter import messagebox
@@ -114,7 +114,7 @@ def dosya_ac_ve_duzenle(sifreli_dosya_yolu: str, parola: str) -> tuple[bool, str
     root = tk.Tk()
     root.title("Kripto - Düzenleme Modu")
     
-    # Pencerenin her zaman en üstte kalmasını sağlayalım
+    # Pencerenin her zaman en üstte kalmasini sağlayalim
     root.attributes("-topmost", True)
     
     window_width = 440
@@ -127,7 +127,7 @@ def dosya_ac_ve_duzenle(sifreli_dosya_yolu: str, parola: str) -> tuple[bool, str
     
     def guvenli_kapat():
         # Pencereyi en üstte tutmaya devam etmesi için parent=root verdik
-        if messagebox.askyesno("Kapat / İptal", "Değişiklikleri kaydetmeden çıkmak istiyor musunuz?\n(Geçici şifresiz dosya silinecektir!)", parent=root):
+        if messagebox.askyesno("Kapat / Iptal", "Değişiklikleri kaydetmeden çikmak istiyor musunuz?\n(Geçici şifresiz dosya silinecektir!)", parent=root):
             if os.path.exists(orijinal_dosya_yolu):
                 os.remove(orijinal_dosya_yolu)
             root.destroy()
@@ -135,16 +135,16 @@ def dosya_ac_ve_duzenle(sifreli_dosya_yolu: str, parola: str) -> tuple[bool, str
             
     root.protocol("WM_DELETE_WINDOW", guvenli_kapat)
     
-    label = tk.Label(root, text=f"'{os.path.basename(orijinal_dosya_yolu)}'\ngeçici olarak çözüldü ve açıldı.", font=("Arial", 10, "bold"), pady=10)
+    label = tk.Label(root, text=f"'{os.path.basename(orijinal_dosya_yolu)}'\ngeçici olarak çözüldü ve açildi.", font=("Arial", 10, "bold"), pady=10)
     label.pack()
     
-    label_info = tk.Label(root, text="Düzenlemeniz bittiğinde dosyayı kaydedip kapatın,\nardından aşağıdaki butona basın.", font=("Arial", 9))
+    label_info = tk.Label(root, text="Düzenlemeniz bittiğinde dosyayi kaydedip kapatin,\nardindan aşağidaki butona basin.", font=("Arial", 9))
     label_info.pack()
     
     def kaydet_ve_sifrele():
         try:
             if not os.path.exists(orijinal_dosya_yolu):
-                messagebox.showerror("Hata", "Orijinal dosya bulunamadı!", parent=root)
+                messagebox.showerror("Hata", "Orijinal dosya bulunamadi!", parent=root)
                 root.destroy()
                 sys.exit(1)
                 
@@ -162,11 +162,11 @@ def dosya_ac_ve_duzenle(sifreli_dosya_yolu: str, parola: str) -> tuple[bool, str
                 f.write(tuz_yeni + nonce_yeni + sifreli_veri_yeni)
                 
             os.remove(orijinal_dosya_yolu)
-            messagebox.showinfo("Başarılı", "Dosya kaydedildi ve tekrar güvenli şekilde şifrelendi.", parent=root)
+            messagebox.showinfo("Başarili", "Dosya kaydedildi ve tekrar güvenli şekilde şifrelendi.", parent=root)
             root.destroy()
             
         except Exception as e:
-            messagebox.showerror("Hata", f"Yeniden şifreleme hatası: {str(e)}", parent=root)
+            messagebox.showerror("Hata", f"Yeniden şifreleme hatasi: {str(e)}", parent=root)
             
     btn_frame = tk.Frame(root)
     btn_frame.pack(pady=15)
@@ -174,27 +174,27 @@ def dosya_ac_ve_duzenle(sifreli_dosya_yolu: str, parola: str) -> tuple[bool, str
     btn_save = tk.Button(btn_frame, text="Kaydet ve Tekrar Şifrele", command=kaydet_ve_sifrele, bg="#4CAF50", fg="white", font=("Arial", 10, "bold"), padx=10, pady=5)
     btn_save.pack(side=tk.LEFT, padx=10)
     
-    btn_cancel = tk.Button(btn_frame, text="İptal Et", command=guvenli_kapat, bg="#f44336", fg="white", font=("Arial", 10, "bold"), padx=10, pady=5)
+    btn_cancel = tk.Button(btn_frame, text="Iptal Et", command=guvenli_kapat, bg="#f44336", fg="white", font=("Arial", 10, "bold"), padx=10, pady=5)
     btn_cancel.pack(side=tk.LEFT, padx=10)
     
-    # os.startfile sonrası odağı ve en üstte olmayı garantilemek için gecikmeli olarak öne getirelim
+    # os.startfile sonrasi odaği ve en üstte olmayi garantilemek için gecikmeli olarak öne getirelim
     root.after(100, lambda: (root.lift(), root.focus_force()))
     
     root.mainloop()
-    return True, "Dosya başarıyla şifrelendi."
+    return True, "Dosya başariyla şifrelendi."
 
-# --- YENİ TERMİNAL VE GUI KONTROL MERKEZİ ---
+# --- YENI TERMINAL VE GUI KONTROL MERKEZI ---
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("\n⚙️  KULLANIM REHBERİ ⚙️")
+        print("\n⚙️  KULLANIM REHBERI ⚙️")
         print("---------------------------------------------")
-        print("Dosya Şifrelemek (Lock) İçin:")
+        print("Dosya Şifrelemek (Lock) Için:")
         print("  python kripto.py -l <dosya_adi> [parolaniz]")
-        print("\nŞifre Çözmek (Unlock) İçin:")
+        print("\nŞifre Çözmek (Unlock) Için:")
         print("  python kripto.py -u <sifreli_dosya_adi> [parolaniz]")
-        print("\nAçıp Düzenlemek (Open & Edit) İçin:")
+        print("\nAçip Düzenlemek (Open & Edit) Için:")
         print("  python kripto.py -o <sifreli_dosya_adi> [parolaniz]")
-        print("\nNot: Parola girilmezse grafik ekranı açılır.")
+        print("\nNot: Parola girilmezse grafik ekrani açilir.")
         print("---------------------------------------------\n")
         sys.exit(1)
 
@@ -218,7 +218,7 @@ if __name__ == "__main__":
         show_char = None if islem == "-l" else "*"
         parola = simpledialog.askstring(
             f"Kripto - {islem_adi}", 
-            f"Lütfen '{os.path.basename(dosya)}' için parolanızı girin:",
+            f"Lütfen '{os.path.basename(dosya)}' için parolanizi girin:",
             show=show_char
         )
         if not parola:
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     elif islem == "-o":
         basarili, sonuc_mesaji = dosya_ac_ve_duzenle(dosya, parola)
     else:
-        sonuc_mesaji = "Geçersiz parametre! Şifrelemek için '-l', çözmek için '-u', düzenlemek için '-o' kullanın."
+        sonuc_mesaji = "Geçersiz parametre! Şifrelemek için '-l', çözmek için '-u', düzenlemek için '-o' kullanin."
         print(f"❌ {sonuc_mesaji}")
         if gui_modu:
             messagebox.showerror("Hata", sonuc_mesaji)
@@ -242,6 +242,6 @@ if __name__ == "__main__":
 
     if gui_modu and islem != "-o": # -o zaten kendi arayüzünü yönetiyor
         if basarili:
-            messagebox.showinfo("Başarılı", sonuc_mesaji)
+            messagebox.showinfo("Başarili", sonuc_mesaji)
         else:
-            messagebox.showerror("Hata", sonuc_mesaji)
+            messagebox.showerror("Hata", sonuc_mesaji)
