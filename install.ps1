@@ -202,6 +202,19 @@ try {
     $doubleClickKey = "HKCU:\Software\Classes\EncryptedFile\shell\open\command"
     Set-RegKeyDefault -Path $doubleClickKey -Value "`"$pythonwPath`" `"$pyFile`" -o `"%1`""
 
+    # --- Program Ekle/Kaldir Listesine Ekleme ---
+    $uninstallRegKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Kripto"
+    if (-not (Test-Path $uninstallRegKey)) {
+        New-Item -Path $uninstallRegKey -Force | Out-Null
+    }
+    Set-RegValue -Path $uninstallRegKey -Name "DisplayName" -Value "Kripto Dosya Sifreleyici"
+    Set-RegValue -Path $uninstallRegKey -Name "DisplayIcon" -Value "$installDir\kripto.ico"
+    Set-RegValue -Path $uninstallRegKey -Name "UninstallString" -Value "`"$installDir\uninstall.exe`""
+    Set-RegValue -Path $uninstallRegKey -Name "Publisher" -Value "Eren Gunduzvar"
+    Set-RegValue -Path $uninstallRegKey -Name "DisplayVersion" -Value "1.0"
+    Set-RegValue -Path $uninstallRegKey -Name "NoModify" -Value 1
+    Set-RegValue -Path $uninstallRegKey -Name "NoRepair" -Value 1
+
     Write-Host "Kayit defteri entegrasyonu basariyla tamamlandi!" -ForegroundColor Green
 }
 catch {

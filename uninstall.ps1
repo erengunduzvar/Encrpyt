@@ -30,6 +30,7 @@ try {
     [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.enc\UserChoice", $false)
     [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\.enc", $false)
     [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\EncryptedFile", $false)
+    [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Microsoft\Windows\CurrentVersion\Uninstall\Kripto", $false)
 
     Write-Host "Kayit defteri temizligi tamamlandi." -ForegroundColor Green
 }
