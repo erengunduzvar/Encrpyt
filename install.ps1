@@ -103,8 +103,47 @@ try {
     [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\EncryptedFile\shell\KriptoSifreCoz", $false)
     [Microsoft.Win32.Registry]::CurrentUser.DeleteSubKeyTree("Software\Classes\*\shell\KriptoMenu", $false)
 
-    # Pythonw.exe ve dosya yolları
+    # Pythonw.exe mutlak yolunu bul (Windows Store hatasını önlemek için)
     $pythonwPath = "pythonw.exe"
+    $regPaths = @(
+        "HKCU:\SOFTWARE\Python\PythonCore\*\InstallPath",
+        "HKLM:\SOFTWARE\Python\PythonCore\*\InstallPath",
+        "HKLM:\SOFTWARE\Wow6432Node\Python\PythonCore\*\InstallPath"
+    )
+    
+    foreach ($regPath in $regPaths) {
+        $paths = Get-ItemProperty -Path $regPath -ErrorAction SilentlyContinue
+        if ($paths) {
+            foreach ($p in $paths) {
+                if ($p.WindowedExecutablePath -and (Test-Path $p.WindowedExecutablePath)) {
+                    $pythonwPath = $p.WindowedExecutablePath
+                    break
+                }
+                elseif ($p.ExecutablePath -and (Test-Path $p.ExecutablePath)) {
+                    $dir = Split-Path $p.ExecutablePath
+                    $wPath = Join-Path $dir "pythonw.exe"
+                    if (Test-Path $wPath) {
+                        $pythonwPath = $wPath
+                        break
+                    }
+                }
+            }
+        }
+        if ($pythonwPath -ne "pythonw.exe") { break }
+    }
+
+    # Kayıt defterinde bulamazsa komut satırından bul, ancak WindowsApps (Mağaza) sahtesini yoksay
+    if ($pythonwPath -eq "pythonw.exe") {
+        $pathsFromPath = Get-Command pythonw.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+        if ($pathsFromPath) {
+            foreach ($p in $pathsFromPath) {
+                if ($p -notlike "*WindowsApps*") {
+                    $pythonwPath = $p
+                    break
+                }
+            }
+        }
+    }
     $pyFile = "$installDir\kripto.py"
     $icoFile = "$installDir\kripto.ico"
 
@@ -121,7 +160,7 @@ try {
     Set-RegValue -Path $sifreleKey -Name "AppliesTo" -Value "NOT System.FileExtension:=.enc"
 
     $sifreleCmdKey = "$sifreleKey\command"
-    Set-RegKeyDefault -Path $sifreleCmdKey -Value "$pythonwPath `"$pyFile`" -l `"%1`""
+    Set-RegKeyDefault -Path $sifreleCmdKey -Value "`"$pythonwPath`" `"$pyFile`" -l `"%1`""
 
     # --- Şifre Çöz Alt Menüsü ---
     $cozKey = "$menuKey\shell\KriptoSifreCoz"
@@ -130,7 +169,7 @@ try {
     Set-RegValue -Path $cozKey -Name "AppliesTo" -Value "System.FileExtension:=.enc"
 
     $cozCmdKey = "$cozKey\command"
-    Set-RegKeyDefault -Path $cozCmdKey -Value "$pythonwPath `"$pyFile`" -u `"%1`""
+    Set-RegKeyDefault -Path $cozCmdKey -Value "`"$pythonwPath`" `"$pyFile`" -u `"%1`""
 
     # --- Aç ve Düzenle Alt Menüsü ---
     $openKey = "$menuKey\shell\KriptoAc"
@@ -139,7 +178,7 @@ try {
     Set-RegValue -Path $openKey -Name "AppliesTo" -Value "System.FileExtension:=.enc"
 
     $openCmdKey = "$openKey\command"
-    Set-RegKeyDefault -Path $openCmdKey -Value "$pythonwPath `"$pyFile`" -o `"%1`""
+    Set-RegKeyDefault -Path $openCmdKey -Value "`"$pythonwPath`" `"$pyFile`" -o `"%1`""
 
     # --- Kripto'yu Kaldır Alt Menüsü ---
     $kaldirKey = "$menuKey\shell\KriptoKaldir"
@@ -161,7 +200,7 @@ try {
 
     # Çift Tıklama (Aç ve Düzenle)
     $doubleClickKey = "HKCU:\Software\Classes\EncryptedFile\shell\open\command"
-    Set-RegKeyDefault -Path $doubleClickKey -Value "$pythonwPath `"$pyFile`" -o `"%1`""
+    Set-RegKeyDefault -Path $doubleClickKey -Value "`"$pythonwPath`" `"$pyFile`" -o `"%1`""
 
     Write-Host "Kayit defteri entegrasyonu basariyla tamamlandi!" -ForegroundColor Green
 }
